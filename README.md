@@ -12,32 +12,59 @@ Read [`problem_statement.md`](./problem_statement.md) for the complete challenge
 
 ---
 
-## Quick Start
+## Quick Start & Setup
 
-Clone the repository and move into the project directory:
+### 1. Environment Setup
 
-```bash
-git clone https://github.com/interviewstreet/hackerrank-orchestrate-october26.git
-cd hackerrank-orchestrate-october26
-```
-
-Start your AI coding tool from the **repository root** so it automatically reads [`AGENTS.md`](./AGENTS.md) and logs your session turns to `log.txt` in the root directory.
-
-Build your solution in `code/main.py`, or use another language and document its setup and run command clearly in your README.
-
-Your solution must:
-
-- Read the input files from `dataset/`
-- Generate one prediction row for every request in `dataset/deletion_requests.csv`
-- Write the final predictions to `output.csv` in the repository root
-
-Run the starter Python entry point with:
+Install Python 3.10+ and project dependencies:
 
 ```bash
-python3 code/main.py
+# Optional virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\Activate.ps1
+
+# Install core dependencies
+pip install python-dotenv google-genai
 ```
 
-The blank template at `dataset/output.csv` is provided as a reference. Your final generated file for submission must be the root-level `output.csv`.
+If using Gemini fallback for multimodal evidence reasoning, set your API key in `.env`:
+```text
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+### 2. Running the Audit Solver
+
+Run the deterministic auditor against the full 518 deletion requests:
+
+```bash
+python code/main.py --dataset dataset --input dataset/deletion_requests.csv --output output.csv
+```
+
+To run with multimodal LLM fallback enabled:
+
+```bash
+python code/main.py --dataset dataset --input dataset/deletion_requests.csv --output output.csv --use-llm
+```
+
+The script will write `output.csv` with exactly 518 sorted cases, strictly validated schema (`case_id,deletion_status,steps_json`), consecutive 1-indexed step numbering, and ordered phases (`FINDING`, `REMEDIATION`, `VERIFICATION`).
+
+### 3. Running Evaluation Harness
+
+Evaluate against the 32 sample ground truth cases:
+
+```bash
+# Generate sample predictions
+python code/main.py --dataset dataset --input dataset/sample_deletion_requests.csv --output sample_pred.csv
+
+# Run evaluation suite
+python code/evaluation/main.py --pred sample_pred.csv --truth dataset/sample_output.csv --show-failures
+```
+
+Run the 3 custom synthetic edge cases:
+
+```bash
+python code/evaluation/main.py --synthetic
+```
 
 
 ## Dataset

@@ -1,0 +1,28 @@
+﻿# Secrets & Environment variables (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Scratch & temporary verification files
+sample_pred.csv
+verify_output.py
+run_checklist.py
+*.tmp
+
+# Operating system & editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
